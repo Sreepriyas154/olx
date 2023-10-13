@@ -16,9 +16,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import  path
-from api.views import Productsview
-
+from api.views import Productsview,Productdetailview
+from api.views import Reviewview,ReviewDetailview
+from api.views import Productviewsetview
+from api.views import Productmodelviewsetview,Reviewsmodelviewsetview,Usersview
+from rest_framework.routers import DefaultRouter
+router=DefaultRouter()
+router.register("api/v1/products",Productviewsetview,basename="product")
+router.register("api/v2/products",Productmodelviewsetview,basename="model")
+router.register("api/v1/reviews",Reviewsmodelviewsetview,basename="review")
+router.register("register",Usersview,basename="user")
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('products',Productsview.as_view()),
-]
+    path("products/<int:id>",Productdetailview.as_view()),
+    path("reviews",Reviewview.as_view()),
+    path("reviews/<int:id>",ReviewDetailview.as_view()),
+]+router.urls
