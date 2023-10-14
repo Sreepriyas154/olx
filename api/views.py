@@ -6,7 +6,7 @@ from rest_framework.viewsets import ViewSet,ModelViewSet
 from api.serializers import VechicleSerializers,ReviewSerializer,Userserializer
 from django.contrib.auth.models import User
 from rest_framework import authentication,permissions
-
+from rest_framework.decorators import action
 # Create your views here.
 class Productsview(APIView):
     def get(self,request,*args,**kwargs):
@@ -114,6 +114,16 @@ class Productviewsetview(ViewSet):
 class Productmodelviewsetview(ModelViewSet):
     serializer_class = VechicleSerializers
     queryset = Vechicles.objects.all()
+    authentication_classes = [authentication.BasicAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    @action(methods=["post"],detail=True)
+    def add_review(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        qs=Vechicles.objects.get(id=id)
+        user=request.user
+        Reviews.objects.create(vechicle=qs,user=user,comment=request.data.get("comment"),rating=request.data.get("rating"))
+        return Response(data="created")
 
 class Reviewsmodelviewsetview(ModelViewSet):
     serializer_class = ReviewSerializer
