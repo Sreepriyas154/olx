@@ -1,6 +1,6 @@
 from  rest_framework import serializers
 from api.views import Vechicles
-from api.models import Reviews
+from api.models import Reviews,Wishlists
 from django.contrib.auth.models import User
 class VechicleSerializers(serializers.Serializer):
     id=serializers.IntegerField(read_only=True)
@@ -44,3 +44,11 @@ class Userserializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return User.objects.create_user(User,**validated_data)
+
+class Wishlistserializer(serializers.ModelSerializer):
+    vechicle=serializers.CharField(read_only=True)
+    user=serializers.CharField(read_only=True)
+    status=serializers.CharField(read_only=True)
+    class Meta:
+        models=Wishlists
+        fields=["vechicle","user","status"]
