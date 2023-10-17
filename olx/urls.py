@@ -21,6 +21,7 @@ from api.views import Reviewview,ReviewDetailview
 from api.views import Productviewsetview
 from api.views import Productmodelviewsetview,Reviewsmodelviewsetview,Usersview
 from rest_framework.routers import DefaultRouter
+from rest_framework.authtoken.views import ObtainAuthToken
 router=DefaultRouter()
 router.register("api/v1/products",Productviewsetview,basename="product")
 router.register("api/v2/products",Productmodelviewsetview,basename="model")
@@ -32,4 +33,5 @@ urlpatterns = [
     path("products/<int:id>",Productdetailview.as_view()),
     path("reviews",Reviewview.as_view()),
     path("reviews/<int:id>",ReviewDetailview.as_view()),
+    path("token/",ObtainAuthToken.as_view())
 ]+router.urls

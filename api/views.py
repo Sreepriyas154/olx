@@ -7,6 +7,7 @@ from api.serializers import VechicleSerializers,ReviewSerializer,Userserializer
 from django.contrib.auth.models import User
 from rest_framework import authentication,permissions
 from rest_framework.decorators import action
+from api.models import Wishlists
 # Create your views here.
 class Productsview(APIView):
     def get(self,request,*args,**kwargs):
@@ -78,7 +79,7 @@ class ReviewDetailview(APIView):
         return Response(data="deleted")
 
 class Productviewsetview(ViewSet):
-    authentication_classes = [authentication.BasicAuthentication]
+    authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     def list(self,request,*args,**kwargs):
         qs=Vechicles.objects.all()
@@ -114,7 +115,7 @@ class Productviewsetview(ViewSet):
 class Productmodelviewsetview(ModelViewSet):
     serializer_class = VechicleSerializers
     queryset = Vechicles.objects.all()
-    authentication_classes = [authentication.BasicAuthentication]
+    authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     @action(methods=["post"],detail=True)
@@ -124,6 +125,21 @@ class Productmodelviewsetview(ModelViewSet):
         user=request.user
         Reviews.objects.create(vechicle=qs,user=user,comment=request.data.get("comment"),rating=request.data.get("rating"))
         return Response(data="created")
+    @action(methods=["get"],detail=True)
+    def get_review(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        qs=Vechicles.objects.get(id=id)
+        reviews=qs.reviews_set.all()
+        serializer=ReviewSerializer(reviews,many=True)
+        return Response(data=True)
+    @action(methods=["post"],detail=True)
+    def add_to_wishlist(self,request,*args,**kwargs):
+        id=kwargs.get(("pk"))
+        qs=Vechicles.objects.get(id=id)
+        user=request.user
+        Wishlists.objects.create(vechicle=qs,user=user,status=request.data.get("option"))
+        return Response("created")
+
 
 class Reviewsmodelviewsetview(ModelViewSet):
     serializer_class = ReviewSerializer
